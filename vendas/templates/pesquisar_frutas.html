@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pesquisar Frutas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            margin-right: 10px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pesquisar Frutas</h1>
+
+        <form method="get" action="{% url 'pesquisar_frutas' %}">
+            <label for="query">Pesquisar:</label>
+            <input type="text" name="query" id="query">
+            <button type="submit">Pesquisar</button>
+        </form>
+
+        <h2>Resultados da Pesquisa</h2>
+        <ul>
+            {% for fruta in frutas %}
+                <li>{{ fruta.nome }} - {{ fruta.classificacao }} - {{ fruta.fresca|yesno:"Sim,Não" }} - {{ fruta.quantidade }} - {{ fruta.valor }}</li>
+            {% empty %}
+                <li>Nenhuma fruta encontrada.</li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'pagina_principal_vendedor' %}">Voltar</a>
+    </div>
+</body>
+</html>

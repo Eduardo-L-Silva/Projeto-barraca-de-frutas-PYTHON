@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar</title>
+    <style>
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .table, .table th, .table td {
+            border: 1px solid #ddd;
+        }
+        .table th, .table td {
+            padding: 10px;
+            text-align: left;
+        }
+        .table th {
+            background-color: #f4f4f4;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerenciar Frutas e Vendedores</h1>
+
+        <a href="{% url 'index' %}" class="button">Voltar para a Página Inicial</a>
+
+        <!-- Adicionar Fruta -->
+        <h2>Adicionar Fruta</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ fruta_form.as_p }}
+            <button type="submit" name="add_fruta" class="button">Adicionar Fruta</button>
+        </form>
+
+        <!-- Adicionar Vendedor -->
+        <h2>Adicionar Vendedor</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ usuario_form.as_p }}
+            <button type="submit" name="add_vendedor" class="button">Adicionar Vendedor</button>
+        </form>
+
+        <!-- Listagem e Remoção de Frutas -->
+        <h2>Frutas Disponíveis</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Classificação</th>
+                    <th>Fresca</th>
+                    <th>Quantidade</th>
+                    <th>Valor</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fruta in frutas %}
+                <tr>
+                    <td>{{ fruta.nome }}</td>
+                    <td>{{ fruta.get_classificacao_display }}</td>
+                    <td>{{ fruta.fresca|yesno:"Sim,Não" }}</td>
+                    <td>{{ fruta.quantidade }}</td>
+                    <td>{{ fruta.valor }}</td>
+                    <td>
+                        <!-- Botão para abrir o modal de edição -->
+                        <button type="button" class="button" onclick="openModal({{ fruta.id }}, '{{ fruta.nome }}', '{{ fruta.classificacao }}', '{{ fruta.fresca }}', {{ fruta.quantidade }}, {{ fruta.valor }})">Editar</button>
+                        <!-- Formulário para remoção de frutas -->
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="fruta_id" value="{{ fruta.id }}">
+                            <button type="submit" name="remove_fruta" class="button" style="background-color: #dc3545;">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Listagem e Remoção de Vendedores -->
+        <h2>Vendedores</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nome de Usuário</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vendedor in vendedores %}
+                <tr>
+                    <td>{{ vendedor.username }}</td>
+                    <td>
+                        <form method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="usuario_id" value="{{ vendedor.id }}">
+                            <button type="submit" name="remove_vendedor" class="button" style="background-color: #dc3545;">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+
+    <!-- Modal para Edição de Frutas -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Editar Fruta</h2>
+            <form id="editForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="fruta_id" id="edit_fruta_id">
+                <label for="edit_nome">Nome:</label>
+                <input type="text" name="nome" id="edit_nome" required>
+                <br>
+                <label for="edit_classificacao">Classificação:</label>
+                <input type="text" name="classificacao" id="edit_classificacao" required>
+                <br>
+                <label for="edit_fresca">Fresca:</label>
+                <select name="fresca" id="edit_fresca">
+                    <option value="True">Sim</option>
+                    <option value="False">Não</option>
+                </select>
+                <br>
+                <label for="edit_quantidade">Quantidade:</label>
+                <input type="number" name="quantidade" id="edit_quantidade" required>
+                <br>
+                <label for="edit_valor">Valor:</label>
+                <input type="number" step="0.01" name="valor" id="edit_valor" required>
+                <br>
+                <button type="submit" name="edit_fruta" class="button" style="background-color: #007bff;">Salvar Alterações</button>
+            </form>
+        </div>
+    </div>
+<!-- Modal de Adicionar Vendedor -->
+<div id="addVendedorModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeAddVendedorModal">&times;</span>
+        <h2>Adicionar Vendedor</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ usuario_form.as_p }}
+            <button type="submit" name="add_vendedor" class="button">Adicionar Vendedor</button>
+        </form>
+    </div>
+</div>
+    <script>
+        // Função para abrir o modal
+        function openModal(id, nome, classificacao, fresca, quantidade, valor) {
+            document.getElementById('edit_fruta_id').value = id;
+            document.getElementById('edit_nome').value = nome;
+            document.getElementById('edit_classificacao').value = classificacao;
+            document.getElementById('edit_fresca').value = fresca;
+            document.getElementById('edit_quantidade').value = quantidade;
+            document.getElementById('edit_valor').value = valor;
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        // Função para fechar o modal
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Fechar o modal quando o usuário clicar fora dele
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('editModal')) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

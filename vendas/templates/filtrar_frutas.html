@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filtrar Frutas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: #fff;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-size: 16px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Frutas Filtradas</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Classificação</th>
+                    <th>Fresca</th>
+                    <th>Quantidade Disponível</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for fruta in frutas %}
+                    <tr>
+                        <td>{{ fruta.nome }}</td>
+                        <td>{{ fruta.classificacao }}</td>
+                        <td>{{ fruta.fresca|yesno:"Sim,Não" }}</td>
+                        <td>{{ fruta.quantidade }}</td>
+                        <td>{{ fruta.valor }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'pagina_principal_vendedor' %}">Voltar</a>
+    </div>
+</body>
+</html>

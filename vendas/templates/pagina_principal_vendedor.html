@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Principal do Vendedor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            margin: 10px 0;
+        }
+        ul li a {
+            text-decoration: none;
+            color: #4CAF50;
+            font-size: 18px;
+        }
+        ul li a:hover {
+            text-decoration: underline;
+        }
+        form {
+            margin-top: 20px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo, {{ user.username }}</h1>
+
+        <ul>
+            <li><a href="{% url 'vender_fruta' %}">Vender Fruta</a></li>
+            <li><a href="{% url 'pesquisar_frutas' %}">Pesquisar Frutas</a></li>
+            <li><a href="{% url 'filtrar_frutas' %}">Filtrar Frutas</a></li>
+            <li><a href="{% url 'relatorio_vendas' %}">Relatório de Vendas</a></li>
+        </ul>
+
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Sair</button>
+        </form>
+    </div>
+</body>
+</html>
